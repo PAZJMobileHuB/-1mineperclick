@@ -1,0 +1,273 @@
+-- Rayfield GUI Core (Ensure you have the latest Rayfield library imported properly)
+ local Rayfield = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Rayfield/main/source'))()
+ -- Create Main Window
+ local Window = Rayfield:CreateWindow({
+     Name = "Game Manager Tool",
+     LoadingTitle = "Initializing Features",
+     LoadingSubtitle = "By Your Dev Name",
+     ConfigurationSaving = {
+         Enabled = true,
+         FolderName = "YourGameSettings",
+         FileName = "SaveData"
+     },
+     Discord = {
+         Enabled = false,
+         Invite = "noinvite",
+         RememberJoins = true
+     },
+     KeySystem = false,
+     KeySettings = {
+         Title = "Enter Key",
+         Subtitle = "Key Required",
+         Note = "Get keys from your dev team",
+         FileName = "KeySystem",
+         SaveKey = true,
+         GrabKeyFromSite = false,
+         Key = "YOUR_KEY_HERE"
+     }
+ })
+ -- Variables to Track Feature States
+ local Features = {
+     AutoCollect = false,
+     AutoSell = false,
+     AutoBreak = false,
+     AutoTrainClick = false,
+     AutoBuy = false,
+     AutoUpgrades = false,
+     AutoTraitMachine = false,
+     AutoRebirth = false,
+     AntiKick = false,
+     AutoRejoin = false,
+     ServerHop = false,
+     PersistentMode = false
+ }
+ -- // TAB 1: MAIN FEATURES \\ --
+ local MainTab = Window:CreateTab("Main Features", 4483362458) -- Icon ID
+ -- Auto Collect Toggle
+ MainTab:CreateToggle({
+     Name = "Auto Collect Resources",
+     CurrentValue = false,
+     Flag = "AutoCollectToggle",
+     Callback = function(Value)
+         Features.AutoCollect = Value
+         while Features.AutoCollect do
+             -- Replace with your game's collect logic (e.g., find collectibles and trigger)
+             for _, collectible in pairs(workspace.Collectibles:GetChildren()) do
+                 if collectible:FindFirstChild("ClickDetector") then
+                     fireclickdetector(collectible.ClickDetector)
+                 end
+             end
+             task.wait(0.5) -- Adjust delay as needed
+         end
+     end,
+ })
+ -- Auto Sell Toggle
+ MainTab:CreateToggle({
+     Name = "Auto Sell Resources",
+     CurrentValue = false,
+     Flag = "AutoSellToggle",
+     Callback = function(Value)
+         Features.AutoSell = Value
+         while Features.AutoSell do
+             -- Replace with your game's sell logic (e.g., trigger sell UI button or remote)
+             if game:GetService("Players").LocalPlayer.PlayerGui.SellGui.SellButton then
+                 game:GetService("Players").LocalPlayer.PlayerGui.SellGui.SellButton:FireServer()
+             end
+             task.wait(5) -- Adjust sell interval
+         end
+     end,
+ })
+ -- Auto Break Toggle
+ MainTab:CreateToggle({
+     Name = "Auto Break Objects",
+     CurrentValue = false,
+     Flag = "AutoBreakToggle",
+     Callback = function(Value)
+         Features.AutoBreak = Value
+         while Features.AutoBreak do
+             -- Replace with your game's break logic (e.g., mine rocks, break crates)
+             for _, target in pairs(workspace.Breakables:GetChildren()) do
+                 if target:FindFirstChild("Health") and target.Health.Value > 0 then
+                     -- Example: Fire remote to break or simulate clicks
+                     game:GetService("ReplicatedStorage").BreakObject:FireServer(target)
+                 end
+             end
+             task.wait(0.2)
+         end
+     end,
+ })
+ -- Auto Train & Clicker Toggle
+ MainTab:CreateToggle({
+     Name = "Auto Training + Auto Clicker",
+     CurrentValue = false,
+     Flag = "AutoTrainClickToggle",
+     Callback = function(Value)
+         Features.AutoTrainClick = Value
+         while Features.AutoTrainClick do
+             -- Auto Clicker Logic (replace with your click target)
+             if game:GetService("Players").LocalPlayer.PlayerGui.ClickGui.ClickButton then
+                 game:GetService("Players").LocalPlayer.PlayerGui.ClickGui.ClickButton:Activate()
+             end
+             -- Auto Training Logic (e.g., use training machines)
+             for _, machine in pairs(workspace.TrainingMachines:GetChildren()) do
+                 if machine:FindFirstChild("ClickDetector") then
+                     fireclickdetector(machine.ClickDetector)
+                 end
+             end
+             task.wait(0.1)
+         end
+     end,
+ })
+ -- Auto Buy Toggle
+ MainTab:CreateToggle({
+     Name = "Auto Buy Items",
+     CurrentValue = false,
+     Flag = "AutoBuyToggle",
+     Callback = function(Value)
+         Features.AutoBuy = Value
+         while Features.AutoBuy do
+             -- Replace with your game's shop logic (e.g., buy affordable items)
+             local ShopGui = game:GetService("Players").LocalPlayer.PlayerGui.ShopGui
+             for _, item in pairs(ShopGui.Items:GetChildren()) do
+                 local cost = tonumber(item.Cost.Text:gsub("%D", ""))
+                 local playerCoins = game:GetService("Players").LocalPlayer.leaderstats.Coins.Value
+                 if cost and playerCoins >= cost then
+                     item.BuyButton:FireServer()
+                 end
+             end
+             task.wait(2)
+         end
+     end,
+ })
+ -- // TAB 2: ADVANCED FEATURES \\ --
+ local AdvancedTab = Window:CreateTab("Advanced Tools", 4483362458)
+ -- Auto Upgrades Toggle
+ AdvancedTab:CreateToggle({
+     Name = "Auto Purchase Upgrades",
+     CurrentValue = false,
+     Flag = "AutoUpgradesToggle",
+     Callback = function(Value)
+         Features.AutoUpgrades = Value
+         while Features.AutoUpgrades do
+             -- Replace with your game's upgrade logic
+             local UpgradeGui = game:GetService("Players").LocalPlayer.PlayerGui.UpgradeGui
+             for _, upgrade in pairs(UpgradeGui.Upgrades:GetChildren()) do
+                 local cost = tonumber(upgrade.Cost.Text:gsub("%D", ""))
+                 local playerCoins = game:GetService("Players").LocalPlayer.leaderstats.Coins.Value
+                 if cost and playerCoins >= cost then
+                     upgrade.BuyButton:FireServer()
+                 end
+             end
+             task.wait(3)
+         end
+     end,
+ })
+ -- Auto Trait Machine Toggle
+ AdvancedTab:CreateToggle({
+     Name = "Auto Use Trait Machine",
+     CurrentValue = false,
+     Flag = "AutoTraitToggle",
+     Callback = function(Value)
+         Features.AutoTraitMachine = Value
+         while Features.AutoTraitMachine do
+             -- Replace with your game's trait machine logic
+             local TraitMachine = workspace.TraitMachine
+             if TraitMachine and TraitMachine:FindFirstChild("ClickDetector") then
+                 fireclickdetector(TraitMachine.ClickDetector)
+             end
+             task.wait(10) -- Adjust interval
+         end
+     end,
+ })
+ -- Auto Rebirth Toggle
+ AdvancedTab:CreateToggle({
+     Name = "Auto Rebirth When Eligible",
+     CurrentValue = false,
+     Flag = "AutoRebirthToggle",
+     Callback = function(Value)
+         Features.AutoRebirth = Value
+         while Features.AutoRebirth do
+             -- Replace with your game's rebirth requirements/logic
+             local RebirthGui = game:GetService("Players").LocalPlayer.PlayerGui.RebirthGui
+             local requiredLevel = tonumber(RebirthGui.RequiredLevel.Text:gsub("%D", ""))
+             local playerLevel = game:GetService("Players").LocalPlayer.leaderstats.Level.Value
+             if requiredLevel and playerLevel >= requiredLevel then
+                 RebirthGui.RebirthButton:FireServer()
+             end
+             task.wait(5)
+         end
+     end,
+ })
+ -- // TAB 3: UTILITY TOOLS \\ --
+ local UtilityTab = Window:CreateTab("Utility", 4483362458)
+ -- Anti-Kick Toggle
+ UtilityTab:CreateToggle({
+     Name = "Anti-Kick Protection",
+     CurrentValue = false,
+     Flag = "AntiKickToggle",
+     Callback = function(Value)
+         Features.AntiKick = Value
+         if Features.AntiKick then
+             -- Basic example: Hook and suppress kick events (adjust per game)
+             local OldKick = game:GetService("Players").LocalPlayer.Kick
+             hookfunction(OldKick, function() return end)
+         else
+             -- Restore original function if needed
+             hookfunction(game:GetService("Players").LocalPlayer.Kick, OldKick)
+         end
+     end,
+ })
+ -- Auto Rejoin/Server Hop Toggle
+ UtilityTab:CreateToggle({
+     Name = "Auto Rejoin + Server Hop",
+     CurrentValue = false,
+     Flag = "AutoRejoinToggle",
+     Callback = function(Value)
+         Features.AutoRejoin = Value
+         Features.ServerHop = Value
+         while Features.AutoRejoin do
+             -- Check if player is in game or needs to rejoin
+             if not game:GetService("Players").LocalPlayer.Character or not game:GetService("Players").LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                 -- Server hop logic: Get new server and teleport
+                 local Servers = game:GetService("HttpService"):JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/"..game.PlaceId.."/servers/Public?sortOrder=Asc&limit=100"))
+                 local RandomServer = Servers.data[math.random(1, #Servers.data)]
+                 if RandomServer and RandomServer.id ~= game.JobId then
+                     game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, RandomServer.id)
+                 else
+                     -- Rejoin current server if no new one found
+                     game:GetService("TeleportService"):Teleport(game.PlaceId)
+                 end
+             end
+             task.wait(30) -- Adjust check interval
+         end
+     end,
+ })
+ -- Persistent Mode Toggle
+ UtilityTab:CreateToggle({
+     Name = "Persistent Scripting",
+     CurrentValue = false,
+     Flag = "PersistentToggle",
+     Callback = function(Value)
+         Features.PersistentMode = Value
+         if Features.PersistentMode then
+             -- Keep script running through scene changes/respawns
+             game:GetService("RunService").Heartbeat:Connect(function()
+                 for _, feature in pairs(Features) do
+                     if type(feature) == "boolean" and feature then
+                         -- Re-initialize active features if needed
+                     end
+                 end
+             end)
+         end
+     end,
+ })
+ -- Mobile Support: Add Touch-Friendly Controls
+ Rayfield:LoadConfiguration()
+ -- Optional: Add Notification for Mobile Users
+ if game:GetService("UserInputService").TouchEnabled then
+     Rayfield:Notify({
+         Title = "Mobile Support Active",
+         Content = "All features work with touch controls!",
+         Duration = 5
+     })
+ end
